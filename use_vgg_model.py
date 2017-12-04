@@ -94,7 +94,8 @@ class UseVggModel:
 	        epochs=100,
 	        verbose=1,
 	        callbacks=callbacks,
-	        validation_data = gen_flow_val
+	        validation_data = gen_flow_val,
+	        validation_steps = 15
 	        )
 	    
 	    #Getting the Best Model
