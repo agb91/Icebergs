@@ -34,7 +34,9 @@ print( X_train[0].shape )
 
 #print( "------------param:  |" + str(X_train.shape[1:]) + "|" )
 
-use_vgg_model = UseVggModel()
+#examples: mentum = 0.9,dropout = 0.3, l1 = 512, l2 = 512,
+use_vgg_model = UseVggModel( 50, True, True, 1, 0.9,
+		0.3, 256, 64 , 15)
 model = use_vgg_model.getVggAngleModel( X_train )
 print("yeah we have a model")
 

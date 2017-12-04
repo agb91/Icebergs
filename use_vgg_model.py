@@ -3,11 +3,19 @@ from import_all import *
 class UseVggModel:
 
 
-	def __init__( self):
-		self.batch_size=64
+
+	def __init__( self, batch_size, h_flip, v_flip, free_levels, momentum,
+		dropout, l1, l2, steps_per_epoch ):
+		self.steps_per_epoch = steps_per_epoch
+		self.batch_size=batch_size
+		self.momentum = momentum
+		self.dropout = dropout
+		self.free_levels = free_levels
+		self.l1 = l1
+		self.l2 = l2
 		# Define the image transformations here
-		self.gen = ImageDataGenerator(horizontal_flip = True,
-	                         vertical_flip = True,
+		self.gen = ImageDataGenerator(horizontal_flip = h_flip,
+	                         vertical_flip = v_flip,
 	                         width_shift_range = 0.,
 	                         height_shift_range = 0.,
 	                         channel_shift_range=0,
@@ -27,9 +35,18 @@ class UseVggModel:
 	        #np.testing.assert_array_equal(X1i[0],X2i[0])
 	        yield [X1i[0], X2i[1]], X1i[1]
 
+	def gen_flow_for_two_inputs_val( self, X1, X2, y):
+		val_batch_size = 30
+		genX1 = self.gen.flow(X1,y,  batch_size=val_batch_size, seed=5 )
+		genX2 = self.gen.flow(X1,X2, batch_size=val_batch_size, seed=5 )
+		while True:
+			X1i = genX1.next()
+			X2i = genX2.next()
+			yield [X1i[0], X2i[1]], X1i[1]        
+
 	# Finally create generator
 	def get_callbacks( self, filepath, patience=2):
-	    es = EarlyStopping('val_loss', patience=10, mode="min")
+	    es = EarlyStopping('accuracy', patience=10, mode="min")
 	    msave = ModelCheckpoint(filepath, save_best_only=True)
 	    return [es, msave]
 
@@ -39,45 +56,46 @@ class UseVggModel:
 		angle_layer = Dense(1, )(input_2)
 		base_model = VGG16(weights=None, include_top=False, 
 	                 input_shape=X_train.shape[1:], classes=1)
+		
+		free_levels = self.free_levels
+		untrainable_n = len(base_model.layers) - free_levels
+		#print( "not trainable levels: " + str( untrainable_n ) )
+		for layer in base_model.layers[:untrainable_n]:
+			layer.trainable = False
+
+		#base_model.summary()	
+
 		base_model.load_weights('input/vgg16_weights_tf_dim_ordering_tf_kernels_notop.h5')
 		x = base_model.get_layer('block5_pool').output
 		x = GlobalMaxPooling2D()(x)
 		merge_one = concatenate([x, angle_layer])
-		merge_one = Dense(512, activation='relu', name='fc2')(merge_one)
-		merge_one = Dropout(0.3)(merge_one)
-		merge_one = Dense(512, activation='relu', name='fc3')(merge_one)
-		merge_one = Dropout(0.3)(merge_one)
+		merge_one = Dense(self.l1, activation='relu', name='fc2')(merge_one)
+		merge_one = Dropout(self.dropout)(merge_one)
+		merge_one = Dense(self.l2, activation='relu', name='fc3')(merge_one)
+		merge_one = Dropout(self.dropout)(merge_one)
 		predictions = Dense(1, activation='sigmoid')(merge_one)
 
 		model = Model(input=[base_model.input, input_2], output=predictions)
-		sgd = SGD(lr=1e-3, decay=1e-6, momentum=0.9, nesterov=True)
+		sgd = SGD(lr=1e-3, decay=1e-6, momentum=self.momentum, nesterov=True)
 		model.compile(loss='binary_crossentropy',
 	                  optimizer=sgd,
 	                  metrics=['accuracy'])
 		return model
 
-
-	def generator( self, features, labels, batch_size):
-	    batch_features = np.zeros((batch_size, 75, 75, 3))
-	    batch_labels = np.zeros((batch_size,1))
-	    while True:
-	        for i in range(batch_size):
-	            index= random.randint(0, (batch_size - 1 ) )
-	            batch_features[i] = features[index]
-	            batch_labels[i] = labels[index]
-	    yield batch_features, batch_labels
-
 	def run( self, images, angles, labels, model):   
 	    file_path = "input/aug_model_weights.hdf5"
 	    callbacks = self.get_callbacks(filepath=file_path, patience=5)
 	    gen_flow = self.gen_flow_for_two_inputs(images, angles, labels)
+	    gen_flow_val = self.gen_flow_for_two_inputs_val(images, angles, labels)
 	    galaxyModel= self.getVggAngleModel(images)
 	    galaxyModel.fit_generator(
 	        gen_flow,
-	        steps_per_epoch=14,
+	        steps_per_epoch=self.steps_per_epoch,
 	        epochs=100,
 	        verbose=1,
-	        callbacks=callbacks)
+	        callbacks=callbacks,
+	        validation_data = gen_flow_val
+	        )
 	    
 	    #Getting the Best Model
 	    galaxyModel.load_weights(filepath=file_path)
