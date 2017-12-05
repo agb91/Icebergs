@@ -2,7 +2,8 @@ from import_all import *
 
 from manage_images import ManageImages
 from use_vgg_model import UseVggModel
-
+from gene import Gene
+from datas import Datas
 
 
 
@@ -27,6 +28,8 @@ y, X_angle, band1, band2, images = manage_images.create_dataset(train, True)
 X_train, X_valid, X_angle_train, X_angle_valid, y_train, y_valid = train_test_split(
     images , X_angle, y, random_state=123, train_size=0.67)
 
+datas = Datas( X_train, X_valid, X_angle_train, X_angle_valid, y_train, y_valid )
+
 
 print( "len:  " + str( len(X_train) ) )
 print("\n shape:")
@@ -35,13 +38,14 @@ print( X_train[0].shape )
 #print( "------------param:  |" + str(X_train.shape[1:]) + "|" )
 
 #examples: mentum = 0.9,dropout = 0.3, l1 = 512, l2 = 512,
-use_vgg_model = UseVggModel( 60, True, True, 6, 0.9,
-		0.3, 256, 128 , 20)
-model = use_vgg_model.getVggAngleModel( X_train )
+
+gene = Gene( 6, True, True, 6, 0.9,
+		0.3, 256, 128 , 2 )
+use_vgg_model = UseVggModel( gene )
+model = use_vgg_model.getVggAngleModel( datas )
 print("yeah we have a model")
 
-use_vgg_model.run( X_train, X_angle_train, y_train, model )
-#print( evaluate( X_train, y_train ) )
+use_vgg_model.run( datas, model )
 
 
 print( "Finished" )

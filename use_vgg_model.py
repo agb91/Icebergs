@@ -1,21 +1,23 @@
 from import_all import *
+from gene import Gene
 
 class UseVggModel:
 
 
 
-	def __init__( self, batch_size, h_flip, v_flip, free_levels, momentum,
-		dropout, l1, l2, steps_per_epoch ):
-		self.steps_per_epoch = steps_per_epoch
-		self.batch_size=batch_size
-		self.momentum = momentum
-		self.dropout = dropout
-		self.free_levels = free_levels
-		self.l1 = l1
-		self.l2 = l2
+	#def __init__( self, batch_size, h_flip, v_flip, free_levels, momentum,
+	#	dropout, l1, l2, steps_per_epoch ):
+	def __init__( self, gene ):
+		self.steps_per_epoch = gene.steps_per_epoch
+		self.batch_size = gene.batch_size
+		self.momentum = gene.momentum
+		self.dropout = gene.dropout
+		self.free_levels = gene.free_levels
+		self.l1 = gene.l1
+		self.l2 = gene.l2
 		# Define the image transformations here
-		self.gen = ImageDataGenerator(horizontal_flip = h_flip,
-	                         vertical_flip = v_flip,
+		self.gen = ImageDataGenerator(horizontal_flip = gene.h_flip,
+	                         vertical_flip = gene.v_flip,
 	                         width_shift_range = 0.,
 	                         height_shift_range = 0.,
 	                         channel_shift_range=0,
@@ -46,12 +48,12 @@ class UseVggModel:
 
 	# Finally create generator
 	def get_callbacks( self, filepath, patience=2):
-	    es = EarlyStopping('accuracy', patience=10, mode="min")
+	    es = EarlyStopping('val_loss', patience=10, mode="min")
 	    msave = ModelCheckpoint(filepath, save_best_only=True)
 	    return [es, msave]
 
-	def getVggAngleModel( self , images):
-		X_train = images
+	def getVggAngleModel( self , datas):
+		X_train = datas.X_train
 		input_2 = Input(shape=[1], name="angle")
 		angle_layer = Dense(1, )(input_2)
 		base_model = VGG16(weights=None, include_top=False, 
@@ -82,16 +84,16 @@ class UseVggModel:
 	                  metrics=['accuracy'])
 		return model
 
-	def run( self, images, angles, labels, model):   
+	def run( self, datas, model):   
 	    file_path = "input/aug_model_weights.hdf5"
 	    callbacks = self.get_callbacks(filepath=file_path, patience=5)
-	    gen_flow = self.gen_flow_for_two_inputs(images, angles, labels)
-	    gen_flow_val = self.gen_flow_for_two_inputs_val(images, angles, labels)
-	    galaxyModel= self.getVggAngleModel(images)
+	    gen_flow = self.gen_flow_for_two_inputs(datas.X_train, datas.X_angle_train, datas.y_train)
+	    gen_flow_val = self.gen_flow_for_two_inputs_val(datas.X_valid, datas.X_angle_valid, datas.y_valid)
+	    galaxyModel= self.getVggAngleModel( datas )
 	    galaxyModel.fit_generator(
 	        gen_flow,
 	        steps_per_epoch=self.steps_per_epoch,
-	        epochs=100,
+	        epochs=2,
 	        verbose=1,
 	        callbacks=callbacks,
 	        validation_data = gen_flow_val,
@@ -101,10 +103,10 @@ class UseVggModel:
 	    #Getting the Best Model
 	    galaxyModel.load_weights(filepath=file_path)
 	    #Getting Training Score
-	    score = galaxyModel.evaluate([images,angles], labels, verbose=0)
-	    print('Train loss:', score[0])
-	    print('Train accuracy:', score[1])
-
+	    score = galaxyModel.evaluate([datas.X_valid,datas.X_angle_valid], datas.y_valid, verbose=0)
+	    print('Valid loss:', score[0])
+	    print('Valid accuracy:', score[1])
+	    return score[0]
 
 
 
