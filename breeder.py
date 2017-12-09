@@ -2,6 +2,11 @@ from  __future__ import division
 
 from gene import Gene
 from geneCreator import GeneCreator
+from manage_images import ManageImages
+from use_vgg_model import UseVggModel
+from gene import Gene
+from datas import Datas
+from geneCreator import GeneCreator
 from import_all import *
 
 class Breeder:
@@ -71,8 +76,7 @@ class Breeder:
 		
 
 
-		X_train, X_valid, X_angle_train, X_angle_valid, y_train, y_valid = datas.X_train,
-			datas.X_valid, datas.X_angle_train, datas.X_angle_valid, datas.y_train, datas.y_valid
+		X_train, X_valid, X_angle_train, X_angle_valid, y_train, y_valid = datas.X_train, datas.X_valid, datas.X_angle_train, datas.X_angle_valid, datas.y_train, datas.y_valid
 
 		
 		for i in range( 0 , len(generation)):
@@ -107,7 +111,7 @@ class Breeder:
 		
 		result = sorted(genes, key=lambda x: x.level, reverse=False)
 		for i in range( 0, len(result) ):
-			print( result[i].level )		
+			print( "after: " + str(result[i].level) )		
 		
 		return result
 
@@ -122,12 +126,12 @@ class Breeder:
 				goods = goods[ 0 : n ]
 
 		for i in range( 0, len(goods) ):
-			print( "goods: " + goods[i].level )		
+			print( "goods: " + str( goods[i].level ) )		
 		return goods		    
 
 	def takeBest( self, genes ):
 
-		minLevel = 0 #level of error
+		minLevel = 999 #level of error
 		bestGene = None
 
 		for i in range(0, len(genes) ):

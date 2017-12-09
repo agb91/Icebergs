@@ -82,21 +82,34 @@ class UseVggModel:
 	                  metrics=['accuracy'])
 		return model
 
-	def run( self, datas, model):   
+	#mode 0 = genetic, mode 1 = serious
+	def run( self, datas, model, mode):   
 	    file_path = "input/aug_model_weights.hdf5"
 	    callbacks = self.get_callbacks(filepath=file_path, patience=5)
 	    gen_flow = self.gen_flow_for_two_inputs(datas.X_train, datas.X_angle_train, datas.y_train)
 	    gen_flow_val = self.gen_flow_for_two_inputs_val(datas.X_valid, datas.X_angle_valid, datas.y_valid)
 	    galaxyModel= self.getVggAngleModel( datas )
-	    galaxyModel.fit_generator(
-	        gen_flow,
-	        steps_per_epoch=self.steps_per_epoch,
-	        epochs=2,
-	        verbose=1,
-	        callbacks=callbacks,
-	        validation_data = gen_flow_val,
-	        validation_steps = 15
-	        )
+	    if( mode == 0 ):
+	    	galaxyModel.fit_generator(
+		        gen_flow,
+		        steps_per_epoch=self.steps_per_epoch,
+		        epochs=3,
+		        verbose=1,
+		        callbacks=callbacks,
+		        validation_data = gen_flow_val,
+		        validation_steps = 3
+		        )
+	    if( mode == 1 ):
+	    	print( "###################################### RUN THE SERIOUS ONE #######################################") 
+	    	galaxyModel.fit_generator(
+		        gen_flow,
+		        steps_per_epoch=self.steps_per_epoch,
+		        epochs=30,
+		        verbose=1,
+		        callbacks=callbacks,
+		        validation_data = gen_flow_val,
+		        validation_steps = 15
+		        )
 	    
 	    #Getting the Best Model
 	    galaxyModel.load_weights(filepath=file_path)

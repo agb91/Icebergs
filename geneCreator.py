@@ -19,7 +19,7 @@ class GeneCreator:
 		else:
 			return False
 
-	def randomFree():
+	def randomFree(self):
 		return ( random.randint(0,2) )
 
 	def randomBatch( self ):
@@ -32,15 +32,15 @@ class GeneCreator:
 		return ( random.randint(10,40) )			
 
 	def randomCreate(self):
-		batch_size = randomBatch()
-		h_flip = randomBool()
-		v_flip = randomBool()
-		free_levels = randomFree()
-		momentum = randomMomentum()
-		dropout = randomDropout()
-		l1 = randomLs()
-		l2 = randomLs()
-		steps_per_epoch = randomSteps()
+		batch_size = self.randomBatch()
+		h_flip = self.randomBool()
+		v_flip = self.randomBool()
+		free_levels = self.randomFree()
+		momentum = self.randomMomentum()
+		dropout = self.randomDropout()
+		l1 = self.randomLs()
+		l2 = self.randomLs()
+		steps_per_epoch = self.randomSteps()
 		gene = Gene(  batch_size, h_flip, v_flip, free_levels, momentum,
 			dropout, l1, l2, steps_per_epoch )
 		return gene 	

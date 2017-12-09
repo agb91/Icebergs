@@ -4,7 +4,8 @@ from manage_images import ManageImages
 from use_vgg_model import UseVggModel
 from gene import Gene
 from datas import Datas
-
+from breeder import Breeder
+from geneCreator import GeneCreator
 
 
 
@@ -15,7 +16,7 @@ print( train.columns.values )
 #print( "len:  " + str( len(train) ) )
 #print( train.describe()  )
 
-#train = train[ 0 : 50]
+train = train[ 0 : 65]
 
 
 train.inc_angle = train.inc_angle.replace('na', 0)
@@ -38,7 +39,7 @@ print( X_train[0].shape )
 #print( "------------param:  |" + str(X_train.shape[1:]) + "|" )
 
 #examples: mentum = 0.9,dropout = 0.3, l1 = 512, l2 = 512,
-
+'''
 gene = Gene( 6, True, True, 6, 0.9,
 		0.3, 256, 128 , 2 )
 use_vgg_model = UseVggModel( gene )
@@ -46,6 +47,7 @@ model = use_vgg_model.getVggAngleModel( datas )
 print("yeah we have a model")
 
 use_vgg_model.run( datas, model )
+'''
 
 
 
@@ -54,7 +56,8 @@ use_vgg_model.run( datas, model )
 
 
 
-
+population = 5
+nGenerations = 5
 
 
 creator = GeneCreator()
@@ -66,15 +69,21 @@ generation = breeder.run( generation, datas )
 
 for i in range ( 0 , nGenerations ):
 	print( "\n\n\n########################## GENERATION: " + str(i) + " ##########################")
-    generation = breeder.getNewGeneration(generation , population)
-    generation = breeder.run( generation )
-    #print( "gen lenght: " + str(len(generation)) )
-    best = breeder.takeBest( generation )
-    #best.toStr()
-    tot = 0
-    
-    print("we reach a error of: " + str( best.level) )
+	generation = breeder.getNewGeneration(generation , population)
+	print("genelen before run: " +  str( len(generation) ) )
+	generation = breeder.run( generation, datas )
+	print("genelen after run: " +  str( len(generation) ) )
+	best = breeder.takeBest( generation )
+	print("we reach a error of: " + str( best.level) )
 
-print( "\n\n\n########################## IN THE END ##########################")
+
+print( "\n\n\n########################## RE-RUN THE BEST: ##########################")
+
+use_vgg_model = UseVggModel( best )
+model = use_vgg_model.getVggAngleModel( datas )
+print("yeah we have a model")
+
+use_vgg_model.run( datas, model, 1 )
+
 
 print( "Finished" )
