@@ -66,24 +66,23 @@ class Breeder:
 		
 		return son	
 
-	def run(self, generation):
+	def run(self, generation, datas):
 		runnedGeneration = list()
 		
-		manage_images = ManageImages()  
-		y, X_angle, band1, band2, images = manage_images.create_dataset(train, True)
 
-		X_train, X_valid, X_angle_train, X_angle_valid, y_train, y_valid = train_test_split(
-    		images , X_angle, y, random_state=123, train_size=0.67)
+
+		X_train, X_valid, X_angle_train, X_angle_valid, y_train, y_valid = datas.X_train,
+			datas.X_valid, datas.X_angle_train, datas.X_angle_valid, datas.y_train, datas.y_valid
 
 		
 		for i in range( 0 , len(generation)):
 			
 			thisGene = generation[i]
 			use_vgg_model = UseVggModel( thisGene )
-			model = use_vgg_model.getVggAngleModel( X_train )
-			print("yeah we have a model")
+			model = use_vgg_model.getVggAngleModel( datas )
+			#print("yeah we have a model")
 
-			result = use_vgg_model.run( X_train, X_angle_train, y_train, model )
+			result = use_vgg_model.run( datas, model )
 			#print( evaluate( X_train, y_train ) )
 
 			thisGene.setFitnessLevel( result ) 
@@ -103,12 +102,12 @@ class Breeder:
 		result = []
 		genesSet = set(genes)
 		genes = list( genesSet ) # no doubles!
-		#for i in range( 0, len(genes) ):
-		#	print( "before: " + str(genes[i].level) )		
+		for i in range( 0, len(genes) ):
+			print( "before: " + str(genes[i].level) )		
 		
-		result = sorted(genes, key=lambda x: x.level, reverse=True)
-		#for i in range( 0, len(result) ):
-		#	print( result[i].level )		
+		result = sorted(genes, key=lambda x: x.level, reverse=False)
+		for i in range( 0, len(result) ):
+			print( result[i].level )		
 		
 		return result
 
@@ -122,19 +121,19 @@ class Breeder:
 			if( len( goods ) > n):
 				goods = goods[ 0 : n ]
 
-		#for i in range( 0, len(goods) ):
-		#	print( goods[i].level )		
+		for i in range( 0, len(goods) ):
+			print( "goods: " + goods[i].level )		
 		return goods		    
 
 	def takeBest( self, genes ):
 
-		maxLevel = 0 #level of correctness percentage
+		minLevel = 0 #level of error
 		bestGene = None
 
 		for i in range(0, len(genes) ):
 			g = genes[i]
-			if( g.level > maxLevel ):
+			if( g.level < minLevel ):
 				bestGene = g
-				maxLevel = g.level
+				minLevel = g.level
 
 		return bestGene		

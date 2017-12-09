@@ -3,8 +3,6 @@ from gene import Gene
 
 class UseVggModel:
 
-
-
 	#def __init__( self, batch_size, h_flip, v_flip, free_levels, momentum,
 	#	dropout, l1, l2, steps_per_epoch ):
 	def __init__( self, gene ):

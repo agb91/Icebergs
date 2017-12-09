@@ -17,7 +17,7 @@ class Gene:
 		self.l1 = l1
 		self.l2 = l2
 		self.steps_per_epoch = steps_per_epoch
-		self.level = one
+		self.level = None
 
 	def toStr( self ):
 		print( "gene: \n " +

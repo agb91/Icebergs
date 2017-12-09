@@ -48,4 +48,33 @@ print("yeah we have a model")
 use_vgg_model.run( datas, model )
 
 
+
+
+
+
+
+
+
+
+
+creator = GeneCreator()
+breeder = Breeder()
+
+print( "\n\n\n########################## TRY! ##########################")
+generation = breeder.getFirstGeneration( population )
+generation = breeder.run( generation, datas )
+
+for i in range ( 0 , nGenerations ):
+	print( "\n\n\n########################## GENERATION: " + str(i) + " ##########################")
+    generation = breeder.getNewGeneration(generation , population)
+    generation = breeder.run( generation )
+    #print( "gen lenght: " + str(len(generation)) )
+    best = breeder.takeBest( generation )
+    #best.toStr()
+    tot = 0
+    
+    print("we reach a error of: " + str( best.level) )
+
+print( "\n\n\n########################## IN THE END ##########################")
+
 print( "Finished" )
