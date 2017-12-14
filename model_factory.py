@@ -101,7 +101,6 @@ class ModelFactory:
 		file_path = "input/aug_model_weights.hdf5"
 
 		batch_size = 64
-		batch_size_genetic = 6
 
 		early_stopping = EarlyStopping(monitor = 'val_loss', patience = 10, verbose = 0, mode= 'min')
 		reduce_lr_loss = ReduceLROnPlateau(monitor='val_loss', factor = 0.1, patience = 7, verbose =1, 
@@ -112,13 +111,15 @@ class ModelFactory:
 
 
 		if( mode == 0):
-			history = model.fit(datas.X_train, datas.y_train, batch_size = batch_size, epochs =4, 
-				verbose =1, validation_split = 0.1, callbacks=callbacks_list)
+			this_X_train = data.X_train[ 0 : 100]
+			this_Y_train = data.y_train[0 : 100]
+			history = model.fit(this_X_train, this_Y_train, batch_size = batch_size, epochs =4, 
+				verbose =1, validation_split = 0.2, callbacks=callbacks_list)
 			
 			return history.history['val_loss']
 				
 		if( mode == 1 ):
-			history = model.fit(datas.X_train, datas.y_train, batch_size = batch_size_genetic, 
+			history = model.fit(datas.X_train, datas.y_train, batch_size = batch_size, 
 				epochs = 20,	verbose =1, validation_split = 0.1, callbacks=callbacks_list)
 			model_json = model.to_json()
 			with open("input/model.json", "w") as json_file:

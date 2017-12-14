@@ -28,7 +28,7 @@ y, X_angle, band1, band2, images = manage_images.create_dataset(train, True)
 
 #for the moment here I don't need a validation set (maybe later I'll do)
 X_train, X_valid, X_angle_train, X_angle_valid, y_train, y_valid = train_test_split(
-    images , X_angle, y, random_state=123, train_size=1.0)
+    images , X_angle, y, random_state=123, train_size=0.99)
 
 datas = Datas( X_train, X_valid, X_angle_train, X_angle_valid, y_train, y_valid )
 
