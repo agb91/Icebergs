@@ -1,7 +1,7 @@
 from import_all import *
 
 from manage_images import ManageImages
-from use_vgg_model import UseVggModel
+from model_factory import ModelFactory
 from gene import Gene
 from datas import Datas
 from breeder import Breeder
@@ -16,7 +16,7 @@ print( train.columns.values )
 #print( "len:  " + str( len(train) ) )
 #print( train.describe()  )
 
-train = train[ 0 : 65]
+#train = train[ 0 : 65]
 
 
 train.inc_angle = train.inc_angle.replace('na', 0)
@@ -26,8 +26,9 @@ train.inc_angle = train.inc_angle.astype(float).fillna(0.0)
 manage_images = ManageImages()  
 y, X_angle, band1, band2, images = manage_images.create_dataset(train, True)
 
+#for the moment here I don't need a validation set (maybe later I'll do)
 X_train, X_valid, X_angle_train, X_angle_valid, y_train, y_valid = train_test_split(
-    images , X_angle, y, random_state=123, train_size=0.67)
+    images , X_angle, y, random_state=123, train_size=1.0)
 
 datas = Datas( X_train, X_valid, X_angle_train, X_angle_valid, y_train, y_valid )
 
@@ -38,26 +39,20 @@ print( X_train[0].shape )
 
 #print( "------------param:  |" + str(X_train.shape[1:]) + "|" )
 
-#examples: mentum = 0.9,dropout = 0.3, l1 = 512, l2 = 512,
 '''
-gene = Gene( 6, True, True, 6, 0.9,
-		0.3, 256, 128 , 2 )
-use_vgg_model = UseVggModel( gene )
-model = use_vgg_model.getVggAngleModel( datas )
+#lr, dropout1, dropout2, l1, l2 
+gene = Gene( 0.01, 0.2,	0.3, 512, 256 )
+model_factory = ModelFactory( )
+model = model_factory.getModel( gene )
 print("yeah we have a model")
 
-use_vgg_model.run( datas, model )
+model_factory.run( datas, model, 1 )
 '''
-
-
-
-
-
 
 
 
 population = 5
-nGenerations = 5
+nGenerations = 4
 
 
 creator = GeneCreator()
@@ -70,20 +65,20 @@ generation = breeder.run( generation, datas )
 for i in range ( 0 , nGenerations ):
 	print( "\n\n\n########################## GENERATION: " + str(i) + " ##########################")
 	generation = breeder.getNewGeneration(generation , population)
-	print("genelen before run: " +  str( len(generation) ) )
+	#print("genelen before run: " +  str( len(generation) ) )
 	generation = breeder.run( generation, datas )
-	print("genelen after run: " +  str( len(generation) ) )
+	#print("genelen after run: " +  str( len(generation) ) )
 	best = breeder.takeBest( generation )
 	print("we reach a error of: " + str( best.level) )
-
+	gene.toStr()
 
 print( "\n\n\n########################## RE-RUN THE BEST: ##########################")
 
-use_vgg_model = UseVggModel( best )
-model = use_vgg_model.getVggAngleModel( datas )
+model_factory = ModelFactory( )
+model = model_factory.getModel( best )
 print("yeah we have a model")
 
-use_vgg_model.run( datas, model, 1 )
+model_factory.run( datas, model, 1 )
 
 
 print( "Finished" )

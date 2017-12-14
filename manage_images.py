@@ -19,7 +19,7 @@ class ManageImages:
 	         #angle = float( math.ceil(row['inc_angle']) ) / 100.0
 	        #band_3 = np.full((75, 75), angle)
 	       
-	        band_3 = (band_1 / band_2)
+	        band_3 = (band_1 + band_2)
 
 	        r = (band_1 + abs(band_1.min())) / np.max((band_1 + abs(band_1.min())))
 	        g = (band_2 + abs(band_2.min())) / np.max((band_2 + abs(band_2.min())))
