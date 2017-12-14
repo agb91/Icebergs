@@ -111,10 +111,10 @@ class ModelFactory:
 
 
 		if( mode == 0):
-			this_X_train = data.X_train[ 0 : 100]
-			this_Y_train = data.y_train[0 : 100]
-			history = model.fit(this_X_train, this_Y_train, batch_size = batch_size, epochs =4, 
-				verbose =1, validation_split = 0.2, callbacks=callbacks_list)
+			this_X_train = datas.X_train[ 0 : 100]
+			this_Y_train = datas.y_train[0 : 100]
+			history = model.fit(this_X_train, this_Y_train, batch_size = 10, epochs =4, 
+				verbose =1, validation_split = 0.3, callbacks=callbacks_list)
 			
 			return history.history['val_loss']
 				
