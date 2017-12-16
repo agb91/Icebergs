@@ -20,10 +20,13 @@ class Gene:
 			"\n dropout2: " + str( self.dropout2 ) +
 			"\n l1: " + str( self.l1 ) +
 			"\n l2: " + str( self.l2 ) +
-		
-			+ "\n result level: " + str( self.level )
-			 )
+			"\n result level: " + str( self.level )	 )
 
 	def setFitnessLevel( self, l ):
-		self.level = l	
+		nparray = np.asarray(l)
+		nparray = sorted(nparray, reverse=False)
+		#print( "\nfitness array: " + str( nparray ) )	
+		self.level = nparray[0]
+		#print("setted level: " + str(self.level) )
+
 

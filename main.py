@@ -51,7 +51,7 @@ model_factory.run( datas, model, 1 )
 
 
 
-population = 5
+population = 6
 nGenerations = 4
 
 
@@ -70,7 +70,7 @@ for i in range ( 0 , nGenerations ):
 	#print("genelen after run: " +  str( len(generation) ) )
 	best = breeder.takeBest( generation )
 	print("we reach a error of: " + str( best.level) )
-	gene.toStr()
+	best.toStr()
 
 print( "\n\n\n########################## RE-RUN THE BEST: ##########################")
 

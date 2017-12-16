@@ -125,6 +125,7 @@ class Breeder:
 
 		for i in range(0, len(genes) ):
 			g = genes[i]
+			#print( "i:" + str(i) + ";  " + str(g.level) + " vs " + str(minLevel) )
 			if( g.level < minLevel ):
 				bestGene = g
 				minLevel = g.level
