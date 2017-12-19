@@ -18,30 +18,27 @@ print( train.columns.values )
 
 #train = train[ 0 : 65]
 
-
 train.inc_angle = train.inc_angle.replace('na', 0)
 train.inc_angle = train.inc_angle.astype(float).fillna(0.0)
 
 
 manage_images = ManageImages()  
-y, X_angle, band1, band2, images = manage_images.create_dataset(train, True)
+y_train, X_train = manage_images.create_dataset( train )
 
-#for the moment here I don't need a validation set (maybe later I'll do)
-X_train, X_valid, X_angle_train, X_angle_valid, y_train, y_valid = train_test_split(
-    images , X_angle, y, random_state=123, train_size=0.99)
 
-datas = Datas( X_train, X_valid, X_angle_train, X_angle_valid, y_train, y_valid )
+datas = Datas( X_train = X_train, y_train = y_train )
 
 
 print( "len:  " + str( len(X_train) ) )
-print("\n shape:")
-print( X_train[0].shape )
+print("\n shape: " + str(X_train[0].shape ) )
 
+#plt.imshow( X_train[2] )
+#plt.show()
 #print( "------------param:  |" + str(X_train.shape[1:]) + "|" )
 
 '''
 #lr, dropout1, dropout2, l1, l2 
-gene = Gene( 0.01, 0.2,	0.3, 512, 256 )
+gene = Gene( 0.001, 0.2, 600 )
 model_factory = ModelFactory( )
 model = model_factory.getModel( gene )
 print("yeah we have a model")
@@ -52,7 +49,7 @@ model_factory.run( datas, model, 1 )
 
 
 population = 6
-nGenerations = 4
+nGenerations = 6
 
 
 creator = GeneCreator()

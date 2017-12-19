@@ -9,19 +9,22 @@ class GeneCreator:
 		result = (random.random() / 2)  # I wanna something in 0 - 0.5
 		return ( result )	
 
-	def randomLs(self):
-		return ( random.randint(360,600) )			
+	def randomLs1(self):
+		return ( random.randint(360,800) )	
+
+	def randomLs2(self):
+		return ( random.randint(180,300) )				
 
 	def randomLr(self):
 		result = ( random.random() / 65 )
 		return result
 
 	def randomCreate(self):
-		dropout1 = self.randomDropout()
-		dropout2 = self.randomDropout()
-		l1 = self.randomLs()
-		l2 = self.randomLs()
+		dropout = self.randomDropout()
+		#dropout2 = self.randomDropout()
+		l1 = self.randomLs1()
+		#l2 = self.randomLs2()
 		lr = self.randomLr()
-		gene = Gene(  lr, dropout1, dropout2, l1, l2 )
+		gene = Gene(  lr, dropout, l1 )
 		return gene 	
 	

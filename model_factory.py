@@ -43,64 +43,77 @@ class ModelFactory:
 
 	def getModel( self, gene ):
 
-		model = keras.models.Sequential()
+		#Building the model
+	    gmodel=Sequential()
+	    #Conv Layer 1
+	    gmodel.add(Conv2D(64, kernel_size=(3, 3),activation='relu', input_shape=(55, 55, 3)))
+	    gmodel.add(MaxPooling2D(pool_size=(3, 3), strides=(2, 2), padding = 'same'))
+	    gmodel.add(Dropout(0.2))
 
-		model.add(keras.layers.convolutional.Conv2D(64, kernel_size=(3,3), 
-			input_shape=(75,75,3)))
-		model.add(Activation('relu'))
-		model.add(BatchNormalization())
-		model.add(keras.layers.convolutional.MaxPooling2D(pool_size=(3,3), 
-			strides=(2,2)))
-		model.add(keras.layers.Dropout( gene.dropout1 ))
+	    #print("-------------------------- layer 1 --------------------------")
+	    #for layer in gmodel.layers:
+	    #	print(layer.output_shape)
+	    
+	    #Conv Layer 2
+	    gmodel.add(Conv2D(128, kernel_size=(3, 3), activation='relu' ))
+	    gmodel.add(MaxPooling2D(pool_size=(2, 2), strides=(2, 2), padding = 'same'))
+	    gmodel.add(Dropout( gene.dropout ))
 
-		model.add(keras.layers.convolutional.Conv2D(128, 
-			kernel_size=(3, 3)))
-		model.add(Activation('relu'))
-		model.add(BatchNormalization())
-		model.add(keras.layers.convolutional.MaxPooling2D(pool_size=(2, 2), 
-			strides=(2, 2)))
-		model.add(keras.layers.Dropout( gene.dropout1 ))
-
-		model.add(keras.layers.convolutional.Conv2D(128, kernel_size=(3, 3)))
-		model.add(Activation('relu'))
-		model.add(BatchNormalization())
-		model.add(keras.layers.convolutional.MaxPooling2D(pool_size=(2, 2), 
-			strides=(2, 2)))
-		model.add(keras.layers.Dropout( gene.dropout2 ))
-
-		model.add(keras.layers.convolutional.Conv2D(64, kernel_size=(3, 3)))
-		model.add(Activation('relu'))
-		model.add(BatchNormalization())
-		model.add(keras.layers.convolutional.MaxPooling2D(pool_size=(2, 2), 
-			strides=(2, 2)))
-		model.add(keras.layers.Dropout( gene.dropout2 ))
-
-		model.add(keras.layers.Flatten())
-
-		model.add(keras.layers.Dense( gene.l1 ))
-		model.add(Activation('relu'))
-		model.add(BatchNormalization())
-		model.add(keras.layers.Dropout(0.2))
-
-		model.add(keras.layers.Dense( gene.l2 ))
-		model.add(Activation('relu'))
-		model.add(BatchNormalization())
-		model.add(keras.layers.Dropout(0.2))
+	    #print("-------------------------- layer 2 --------------------------")
+	    #for layer in gmodel.layers:
+	    #	print(layer.output_shape)
 
 
-		model.add(keras.layers.Dense(1))
-		model.add(Activation('sigmoid'))
+	    #Conv Layer 3
+	    gmodel.add(Conv2D(128, kernel_size=(3, 3), activation='relu'))
+	    gmodel.add(MaxPooling2D(pool_size=(2, 2), strides=(2, 2)))
+	    gmodel.add(Dropout( gene.dropout ))
 
-		mypotim=Adam(lr= gene.lr , decay=0.0)
-		model.compile(loss='binary_crossentropy', optimizer = mypotim, metrics=['accuracy'])
+	    #print("-------------------------- layer 3 --------------------------")
+	    #for layer in gmodel.layers:
+	    #	print(layer.output_shape)
 
-		return model
+	    	
+	    #Conv Layer 4
+	    gmodel.add(Conv2D(64, kernel_size=(3, 3), activation='relu'))
+	    gmodel.add(MaxPooling2D(pool_size=(2, 2), strides=(1, 1)))
+	    gmodel.add(Dropout( gene.dropout ))
+
+	    #print("-------------------------- layer 4 --------------------------")
+	    #for layer in gmodel.layers:
+	    #	print(layer.output_shape)
+	    
+	    #Flatten the data for upcoming dense layers
+	    gmodel.add(Flatten())
+
+	    #Dense Layers
+	    gmodel.add(Dense( gene.l1 ))
+	    gmodel.add(Activation('relu'))
+	    gmodel.add(Dropout(gene.dropout))#was 0.2
+
+	    #Dense Layer 2
+	    gmodel.add(Dense( int(gene.l1 / 2) ))
+	    gmodel.add(Activation('relu'))
+	    gmodel.add(Dropout( gene.dropout ))
+
+	    #Sigmoid Layer
+	    gmodel.add(Dense(1))
+	    gmodel.add(Activation('sigmoid'))
+
+	    mypotim=Adam(lr=0.001, beta_1=0.9, beta_2=0.999, epsilon=1e-08, decay=0.0)
+	    gmodel.compile(loss='binary_crossentropy',
+	                  optimizer=mypotim,
+	                  metrics=['accuracy'])
+
+	    #gmodel.summary()
+
+	    return gmodel
 
 	#mode 0 = genetic, mode 1 = serious
 	def run( self, datas, model, mode):   
-		file_path = "input/aug_model_weights.hdf5"
+		file_path = "input/model.json"
 
-		batch_size = 64
+		batch_size = 25
 
 		early_stopping = EarlyStopping(monitor = 'val_loss', patience = 10, verbose = 0, mode= 'min')
 		reduce_lr_loss = ReduceLROnPlateau(monitor='val_loss', factor = 0.1, patience = 7, verbose =1, 
@@ -109,18 +122,19 @@ class ModelFactory:
 		checkpoint = ModelCheckpoint(model_filepath, monitor='val_loss', verbose=1, save_best_only=True, mode='min')
 		callbacks_list = [early_stopping, checkpoint]
 
-
+		#genetical
 		if( mode == 0):
-			this_X_train = datas.X_train[ 0 : 100]
-			this_Y_train = datas.y_train[0 : 100]
-			history = model.fit(this_X_train, this_Y_train, batch_size = 10, epochs =4, 
-				verbose =1, validation_split = 0.3, callbacks=callbacks_list)
+			this_X_train = datas.X_train[ 0 : 350]
+			this_Y_train = datas.y_train[0 : 350]
+			history = model.fit(this_X_train, this_Y_train, batch_size = 25, epochs =5, 
+				verbose =1, validation_split = 0.5, callbacks=callbacks_list)
 			
 			return history.history['val_loss']
 				
+		#real one		
 		if( mode == 1 ):
 			history = model.fit(datas.X_train, datas.y_train, batch_size = batch_size, 
-				epochs = 20,	verbose =1, validation_split = 0.1, callbacks=callbacks_list)
+				epochs = 50, verbose =1, validation_split = 0.5, callbacks=callbacks_list)
 			model_json = model.to_json()
 			with open("input/model.json", "w") as json_file:
 				json_file.write(model_json)

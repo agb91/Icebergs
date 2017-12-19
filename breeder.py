@@ -39,32 +39,19 @@ class Breeder:
 	def getSon( self, parents ):
 
 		
-		dri1 = random.randint(0, (len(parents) - 1 ) )
-		dr1 = parents[dri1].dropout1
-
-		dri2 = random.randint(0, (len(parents) - 1 ) )
-		dr2 = parents[dri2].dropout2 
- 
+		dri = random.randint(0, (len(parents) - 1 ) )
+		dr = parents[dri].dropout
 
 		l1i = random.randint(0, (len(parents) - 1 ) )
 		l1 = parents[l1i].l1
 
-		l2i = random.randint(0, (len(parents) - 1 ) )
-		l2 = parents[l2i].l2 
-
-		lri = random.randint(0, (len(parents) - 1 ) )
-		lr = parents[lri].lr 
-
-		son = Gene( lr,	dr1, dr2, l1, l2 )
+		son = Gene( 0.001,	dr, l1 )
 		
 		return son	
 
 	def run(self, generation, datas):
 		runnedGeneration = list()
 
-		X_train, X_valid, X_angle_train, X_angle_valid, y_train, y_valid = datas.X_train, datas.X_valid, datas.X_angle_train, datas.X_angle_valid, datas.y_train, datas.y_valid
-
-		
 		for i in range( 0 , len(generation)):
 			
 			thisGene = generation[i]

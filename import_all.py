@@ -1,5 +1,6 @@
 from  __future__ import division
 import keras
+import matplotlib.pyplot as plt
 import math
 from keras.callbacks import ModelCheckpoint,EarlyStopping,ReduceLROnPlateau
 from keras.preprocessing.image import ImageDataGenerator
@@ -7,6 +8,7 @@ from keras.models import Sequential
 from keras.layers import Dense, Activation
 from keras.layers.normalization import BatchNormalization
 import random
+from scipy.ndimage import rotate as rot
 import numpy as np
 np.random.seed(98643)
 import tensorflow as tf
@@ -26,7 +28,8 @@ from keras.applications.mobilenet import MobileNet
 from keras.applications.vgg19 import VGG19
 from keras.layers import Concatenate, Dense, LSTM, Input, concatenate
 from keras.preprocessing import image
-from keras.applications.vgg16 import preprocess_input   
+from keras.applications.vgg16 import preprocess_input 
+from scipy import ndimage  
 
 # Training part
 from keras.layers import Conv2D, MaxPooling2D, Dense, Dropout, Input, Flatten, GlobalAveragePooling2D, Lambda
