@@ -11,12 +11,18 @@ from geneCreator import GeneCreator
 
     
 train = pd.read_json("data/train.json")
+test = pd.read_json("data/test.json")
 
-print( train.columns.values )
+print( "train column values: " + str( train.columns.values ) )
+print( "test column values: " + str( test.columns.values ) )
+
 #print( "len:  " + str( len(train) ) )
 #print( train.describe()  )
 
 #train = train[ 0 : 65]
+
+test.inc_angle = test.inc_angle.replace('na', 0)
+test.inc_angle = test.inc_angle.astype(float).fillna(0.0)
 
 train.inc_angle = train.inc_angle.replace('na', 0)
 train.inc_angle = train.inc_angle.astype(float).fillna(0.0)
@@ -24,9 +30,9 @@ train.inc_angle = train.inc_angle.astype(float).fillna(0.0)
 
 manage_images = ManageImages()  
 y_train, X_train = manage_images.create_dataset( train )
+X_test = manage_images.create_dataset_test( test )
 
-
-datas = Datas( X_train = X_train, y_train = y_train )
+datas = Datas( X_train = X_train, y_train = y_train, X_test = X_test )
 
 
 print( "len:  " + str( len(X_train) ) )
@@ -36,18 +42,18 @@ print("\n shape: " + str(X_train[0].shape ) )
 #plt.show()
 #print( "------------param:  |" + str(X_train.shape[1:]) + "|" )
 
-'''
+
 #lr, dropout1, dropout2, l1, l2 
-gene = Gene( 0.001, 0.2, 600 )
+gene = Gene( 0.001, 0.2, 512 )
 model_factory = ModelFactory( )
 model = model_factory.getModel( gene )
 print("yeah we have a model")
 
 model_factory.run( datas, model, 1 )
+
+
+
 '''
-
-
-
 population = 6
 nGenerations = 6
 
@@ -76,6 +82,7 @@ model = model_factory.getModel( best )
 print("yeah we have a model")
 
 model_factory.run( datas, model, 1 )
-
+'''
+predicted_test=model_factory.evaluate( X_test, model, test )
 
 print( "Finished" )

@@ -79,4 +79,13 @@ class ManageImages:
 
 		return train_y, train_X    
 
+	def create_dataset_test( self, test ):
+
+		test_X = self.transform( test )
+		#test_y = np.array(test ['is_iceberg'])
+
+		print ("in method: " + str( test_X.shape ) )
+		
+		return test_X    	
+
     

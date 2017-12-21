@@ -5,13 +5,8 @@ class ModelFactory:
 
 	#lr,	dropout1, dropout2, l1, l2 
 	def __init__( self ):
-		'''
-		self.lr = gene.lr
-		self.dropout1 = gene.dropout1
-		self.dropout1 = gene.dropout2
-		self.l1 = gene.l1
-		self.l2 = gene.l2
-		'''
+		self.file_path = ".model_weights.hdf5"
+
 		# Define the image transformations here
 		self.gen = ImageDataGenerator(horizontal_flip = True,
 			vertical_flip = True,
@@ -111,15 +106,16 @@ class ModelFactory:
 
 	#mode 0 = genetic, mode 1 = serious
 	def run( self, datas, model, mode):   
-		file_path = "input/model.json"
+		
 
 		batch_size = 25
 
 		early_stopping = EarlyStopping(monitor = 'val_loss', patience = 10, verbose = 0, mode= 'min')
 		reduce_lr_loss = ReduceLROnPlateau(monitor='val_loss', factor = 0.1, patience = 7, verbose =1, 
 			epsilon = 1e-4, mode='min', min_lr = 0.0001)
-		model_filepath=file_path
-		checkpoint = ModelCheckpoint(model_filepath, monitor='val_loss', verbose=1, save_best_only=True, mode='min')
+		model_filepath=self.file_path
+		checkpoint = ModelCheckpoint(model_filepath, monitor='val_loss', verbose=1,
+			save_best_only=True)
 		callbacks_list = [early_stopping, checkpoint]
 
 		#genetical
@@ -134,12 +130,15 @@ class ModelFactory:
 		#real one		
 		if( mode == 1 ):
 			history = model.fit(datas.X_train, datas.y_train, batch_size = batch_size, 
-				epochs = 50, verbose =1, validation_split = 0.5, callbacks=callbacks_list)
-			model_json = model.to_json()
-			with open("input/model.json", "w") as json_file:
-				json_file.write(model_json)
+				epochs = 20, verbose =1, validation_split = 0.5, callbacks=callbacks_list)
 			return history.history['val_loss']
 
-
+	def evaluate( self, X_test, model, test ):
+		model.load_weights( filepath=self.file_path )
+		predicted_test = model.predict_proba(X_test)
+		submission = pd.DataFrame()
+		submission['id']=test['id']
+		submission['is_iceberg']=predicted_test.reshape((predicted_test.shape[0]))
+		submission.to_csv('result/sub.csv', index=False)	
 
 			
