@@ -130,15 +130,27 @@ class ModelFactory:
 		#real one		
 		if( mode == 1 ):
 			history = model.fit(datas.X_train, datas.y_train, batch_size = batch_size, 
-				epochs = 20, verbose =1, validation_split = 0.5, callbacks=callbacks_list)
+				epochs = 10, verbose =1, validation_split = 0.5, callbacks=callbacks_list)
 			return history.history['val_loss']
+
+	def x01( self, x ):
+		if( x < 0.5 ):
+			return 0.0
+		else:
+			return 1.0			
 
 	def evaluate( self, X_test, model, test ):
 		model.load_weights( filepath=self.file_path )
 		predicted_test = model.predict_proba(X_test)
 		submission = pd.DataFrame()
 		submission['id']=test['id']
-		submission['is_iceberg']=predicted_test.reshape((predicted_test.shape[0]))
+		results = predicted_test.reshape((predicted_test.shape[0]))
+		#results = np.array( results )
+		#results = np.where(results > 0.5, 1, 0)
+		#np.array([list(i*0.01) if i>0 else list(i) for i in arr])
+		#print ( results.shape )
+		#print ( results )
+		submission['is_iceberg'] = results
 		submission.to_csv('result/sub.csv', index=False)	
 
 			
