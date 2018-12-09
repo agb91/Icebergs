@@ -2,6 +2,8 @@ from import_all import *
 
 class ManageImages:
 
+	#I've a 2 channel image, quite unusual, I wanna a 3 channel image
+	#so I create a third channel based on the first two and I normalize them all
 	def transform ( self, df ):
 	    images = []
 	    for i, row in df.iterrows():
@@ -24,7 +26,8 @@ class ManageImages:
 
 	    return np.array(images)
 
-
+	#we can have more images just flipping, rotating, mirroring the original ones
+	#more images implies less overfitting
 	def augment( self, images ):
 	    image_mirror_lr = []
 	    image_mirror_ud = []
@@ -59,14 +62,15 @@ class ManageImages:
 	    return images
 
 
-
+	# need to transform raw 2-channel radar images to 3-channle normalized images
+	# and to augment their number    
 	def create_dataset( self, train ):
 
 		train_X = self.transform( train )
 		train_y = np.array(train ['is_iceberg'])
 
 		indx_tr = np.where(train.inc_angle > 0)
-		print (indx_tr[0].shape)
+		#print (indx_tr[0].shape)
 
 		train_y = train_y[indx_tr[0]]
 		train_X = train_X[indx_tr[0], ...]
@@ -74,17 +78,18 @@ class ManageImages:
 		train_X = self.augment( train_X )
 		train_y = np.concatenate((train_y,train_y, train_y, train_y))
 
-		print ("in method: " + str( train_X.shape ) )
-		print ("in method: " + str( train_y.shape ) )
+		##print ("in method: " + str( train_X.shape ) )
+		##print ("in method: " + str( train_y.shape ) )
 
 		return train_y, train_X    
 
+	# the test images don't have label so there is no need to manage test_y	
 	def create_dataset_test( self, test ):
 
 		test_X = self.transform( test )
 		#test_y = np.array(test ['is_iceberg'])
 
-		print ("in method: " + str( test_X.shape ) )
+		#print ("in method: " + str( test_X.shape ) )
 		
 		return test_X    	
 

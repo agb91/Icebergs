@@ -3,11 +3,11 @@ from gene import Gene
 
 class ModelFactory:
 
-	#lr,	dropout1, dropout2, l1, l2 
+	#lr,dropout1, dropout2, l1, l2 
 	def __init__( self ):
 		self.file_path = ".model_weights.hdf5"
 
-		# Define the image transformations here
+		# thanks Keras
 		self.gen = ImageDataGenerator(horizontal_flip = True,
 			vertical_flip = True,
 			width_shift_range = 0.,
@@ -36,6 +36,9 @@ class ModelFactory:
 		msave = ModelCheckpoint(filepath, save_best_only=True)
 		return [es, msave]
 
+	#create a convolutional neural network, using the information present in the gene
+	#why are we using only some information in the gene and some other are cabled?
+	#because this is demo!
 	def getModel( self, gene ):
 
 		#Building the model
@@ -104,7 +107,16 @@ class ModelFactory:
 
 	    return gmodel
 
-	#mode 0 = genetic, mode 1 = serious
+	#mode 0 = genetic, mode 1 = cabled
+	#train the neural network, and use and evalue it
+	'''
+		Keras can do it for me!:
+			is_Y_train = datas.y_train[0 : 350]
+			history = model.fit(this_X_train, this_Y_train, batch_size = 25, epochs =5, 
+				verbose =1, validation_split = 0.5, callbacks=callbacks_list)
+			
+			return history.history['val_loss']
+	'''
 	def run( self, datas, model, mode):   
 		
 
@@ -119,6 +131,7 @@ class ModelFactory:
 		callbacks_list = [early_stopping, checkpoint]
 
 		#genetical
+		#this is a demo se I use only some images
 		if( mode == 0):
 			this_X_train = datas.X_train[ 0 : 350]
 			this_Y_train = datas.y_train[0 : 350]
@@ -127,7 +140,7 @@ class ModelFactory:
 			
 			return history.history['val_loss']
 				
-		#real one		
+		#cabled		
 		if( mode == 1 ):
 			history = model.fit(datas.X_train, datas.y_train, batch_size = batch_size, 
 				epochs = 10, verbose =1, validation_split = 0.5, callbacks=callbacks_list)

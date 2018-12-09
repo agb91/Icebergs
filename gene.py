@@ -3,13 +3,15 @@ import random
 
 class Gene:
 
-	#dropdown was 0.2
+	# in the Gene of this genetic algorithm there are the configuration of a neural network
+	# the main aim of this application is to find the best combination of this configs
 	def __init__( self, lr,	dropout, l1 ):
-
+		#dropout 0.2 is a reasonable value
 		self.lr = lr
 		self.dropout = dropout
 		self.l1 = l1
 		self.level = None
+
 
 	def toStr( self ):
 		print( "gene: \n " +
@@ -18,6 +20,7 @@ class Gene:
 			"\n l1: " + str( self.l1 ) +
 			"\n result level: " + str( self.level )	 )
 
+	#the level who show us how good is this solution	
 	def setFitnessLevel( self, l ):
 		nparray = np.asarray(l)
 		nparray = sorted(nparray, reverse=False)
