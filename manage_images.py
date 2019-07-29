@@ -2,7 +2,7 @@ from import_all import *
 
 class ManageImages:
 
-	#I've a 2 channel image, quite unusual, I wanna a 3 channel image
+	#I've a 2 channel image, quite unusual, I want a 3 channel image
 	#so I create a third channel based on the first two and I normalize them all
 	def transform ( self, df ):
 	    images = []
@@ -63,7 +63,8 @@ class ManageImages:
 
 
 	# need to transform raw 2-channel radar images to 3-channle normalized images
-	# and to augment their number    
+	# and to augment their number (through mirroring, rotating and so on)   
+	# x are features, y are labels. is_iceberg is the label column
 	def create_dataset( self, train ):
 
 		train_X = self.transform( train )

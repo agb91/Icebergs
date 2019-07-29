@@ -35,12 +35,12 @@ The entire project is based on Python3 and Keras library.
 
 
 
-#datasets taken from https://www.kaggle.com/, use Pandas to read it   
+#datasets taken from https://www.kaggle.com/, I used Pandas to read it   
 train = pd.read_json("data/train.json")
 test = pd.read_json("data/test.json")
 
-print( "train column values: " + str( train.columns.values ) )
-print( "test column values: " + str( test.columns.values ) )
+#print( "train column values: " + str( train.columns.values ) )
+#print( "test column values: " + str( test.columns.values ) )
 
 #print( "len:  " + str( len(train) ) )
 #print( train.describe()  )
@@ -53,7 +53,8 @@ test.inc_angle = test.inc_angle.astype(float).fillna(0.0)
 train.inc_angle = train.inc_angle.replace('na', 0)
 train.inc_angle = train.inc_angle.astype(float).fillna(0.0)
 
-#some data mungling in order to have features and label to train, and features to test
+#some data mungling in order to have features and labels to train, and features to test
+#train images has both features and labels (x and y), test images only features (x)
 manage_images = ManageImages()  
 y_train, X_train = manage_images.create_dataset( train )
 X_test = manage_images.create_dataset_test( test )
@@ -79,11 +80,9 @@ datas = Datas( X_train = X_train, y_train = y_train, X_test = X_test )
 #model_factory.run( datas, model, 1 )
 
 
-
 #good compromise taken into account my reduced computational power
 population = 6
 nGenerations = 6
-
 
 creator = GeneCreator()
 breeder = Breeder()
@@ -100,7 +99,7 @@ for i in range ( 0 , nGenerations ):
 	generation = breeder.getNewGeneration(generation , population)
 	#try and evalue it
 	generation = breeder.run( generation, datas )
-	#take the best one of this generation and pring how good is it
+	#take the best one of this generation and show how good is it
 	best = breeder.takeBest( generation )
 	print("we reach a error of: " + str( best.level) )
 	best.toStr()
@@ -113,6 +112,6 @@ print("yeah we have a model")
 
 model_factory.run( datas, model, 1 )
 
-predicted_test=model_factory.evaluate( X_test, model, test )
+model_factory.evaluate( X_test, model, test )
 
 print( "Finished" )

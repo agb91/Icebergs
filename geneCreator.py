@@ -4,13 +4,13 @@ import random
 
 class GeneCreator:
 	
-	# all the useful random generator fo settings, because we need to start from a random point!
+	# all the useful random generator of settings, because we need to start from a random point
 	# note: they generates only realistic values 
 	# (which values are realistically needed to generate a good solution is my personal 
 	# opinion based on my experience)
 
 	def randomDropout(self):
-		result = (random.random() / 2)  # I wanna something in 0 - 0.5
+		result = (random.random() / 2)  # I want something in range 0 - 0.5
 		return ( result )	
 
 	def randomLs1(self):

@@ -3,6 +3,8 @@ from gene import Gene
 
 class ModelFactory:
 
+
+
 	#lr,dropout1, dropout2, l1, l2 
 	def __init__( self ):
 		self.file_path = ".model_weights.hdf5"
@@ -17,18 +19,19 @@ class ModelFactory:
 			rotation_range = 10)
 
 
+	'''
 	# Here is the function that merges our two generators
 	# We use the exact same generator with the same random seed for both the y and angle arrays
 	def gen_flow_for_two_inputs( self, X1, X2, y):
-		genX1 = self.gen.flow(X1,y,  batch_size=self.batch_size,seed=55)
-		genX2 = self.gen.flow(X1,X2, batch_size=self.batch_size,seed=55)
+		genX1 = self.gen.flow(X1,y,  seed=55)
+		genX2 = self.gen.flow(X1,X2, seed=55)
 		while True:
 			X1i = genX1.next()
 			X2i = genX2.next()
 			#Assert arrays are equal - this was for peace of mind, but slows down training
 			#np.testing.assert_array_equal(X1i[0],X2i[0])
 			yield [X1i[0], X2i[1]], X1i[1]
-
+	'''
 
 	# Finally create generator
 	def get_callbacks( self, filepath, patience=2):
@@ -107,8 +110,7 @@ class ModelFactory:
 
 	    return gmodel
 
-	#mode 0 = genetic, mode 1 = cabled
-	#train the neural network, and use and evalue it
+	
 	'''
 		Keras can do it for me!:
 			is_Y_train = datas.y_train[0 : 350]
@@ -117,14 +119,16 @@ class ModelFactory:
 			
 			return history.history['val_loss']
 	'''
+	#mode 0 = for the genetical algorithm we can fit the model with less images (just 350) in order to
+	#reduce the computational needs  
+	#mode 1 = all the images
+	#train the neural network, and use and evalue it
 	def run( self, datas, model, mode):   
-		
-
 		batch_size = 25
 
 		early_stopping = EarlyStopping(monitor = 'val_loss', patience = 10, verbose = 0, mode= 'min')
-		reduce_lr_loss = ReduceLROnPlateau(monitor='val_loss', factor = 0.1, patience = 7, verbose =1, 
-			epsilon = 1e-4, mode='min', min_lr = 0.0001)
+		#reduce_lr_loss = ReduceLROnPlateau(monitor='val_loss', factor = 0.1, patience = 7, verbose =1, 
+		#	epsilon = 1e-4, mode='min', min_lr = 0.0001)
 		model_filepath=self.file_path
 		checkpoint = ModelCheckpoint(model_filepath, monitor='val_loss', verbose=1,
 			save_best_only=True)
@@ -140,7 +144,7 @@ class ModelFactory:
 			
 			return history.history['val_loss']
 				
-		#cabled		
+		#standard		
 		if( mode == 1 ):
 			history = model.fit(datas.X_train, datas.y_train, batch_size = batch_size, 
 				epochs = 10, verbose =1, validation_split = 0.5, callbacks=callbacks_list)

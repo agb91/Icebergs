@@ -3,7 +3,7 @@ import random
 
 class Gene:
 
-	# in the Gene of this genetic algorithm there are the configuration of a neural network
+	# in the Gene of this genetic algorithm there are the configurations of a neural network
 	# the main aim of this application is to find the best combination of this configs
 	def __init__( self, lr,	dropout, l1 ):
 		#dropout 0.2 is a reasonable value
