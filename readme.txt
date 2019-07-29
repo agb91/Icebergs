@@ -14,7 +14,7 @@ The entire project is based on Python3 and Keras library.
 useful installation info:
 
 Database:
-I have not putted al the DB on Git (the folder data is empty), because it is very big, you can find the database here https://www.kaggle.com/c/statoil-iceberg-classifier-challenge/data, and you can use the script json_cutter.py in order to reduce it according to the performances of your machine
+I have not putted al the DB on Git (there are to put in a "data" folder in the main folder of the project), because it is very big, you can find the database here https://www.kaggle.com/c/statoil-iceberg-classifier-challenge/data, and you can use the script json_cutter.py in order to reduce it according to the performances of your machine
 
 needed:
 install python3: https://realpython.com/installing-python/
