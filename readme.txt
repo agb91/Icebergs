@@ -11,14 +11,16 @@ The entire project is based on Python3 and Keras library.
 
 
 
-
 useful installation info:
+
+Database:
+I have not putted al the DB on Git (the folder data is empty), because it is very big, you can find the database here https://www.kaggle.com/c/statoil-iceberg-classifier-challenge/data, and you can use the script json_cutter.py in order to reduce it according to the performances of your machine
 
 needed:
 install python3: https://realpython.com/installing-python/
 install keras(tensorflow backend): http://inmachineswetrust.com/posts/deep-learning-setup/
 install pandas: https://pandas.pydata.org/pandas-docs/stable/install.html#installing-using-your-linux-distribution-s-package-manager
-
+install scikit-learn https://scikit-learn.org/stable/install.html
 
 how to run:
 from terminal, in the folder of the project: python main.py

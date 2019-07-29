@@ -1,6 +1,5 @@
 from  __future__ import division
 import keras
-import matplotlib.pyplot as plt
 import math
 from keras.callbacks import ModelCheckpoint,EarlyStopping,ReduceLROnPlateau
 from keras.preprocessing.image import ImageDataGenerator
@@ -20,7 +19,6 @@ from skimage.color import rgb2gray
 from skimage.transform import resize
 # Data reading and visualization
 import pandas as pd
-import matplotlib.pyplot as plt
 from sklearn.preprocessing import MinMaxScaler
 
 from keras.applications.xception import Xception
